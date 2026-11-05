@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: classroom-rollcall
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt -c constraints-tested.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      # 教师口令：部署时在 Render 面板里手动填写（不要写进仓库）
+      - key: TEACHER_API_KEY
+        sync: false
+      # 数据库：先用 Render 自带的临时 SQLite（重启后可能重置）
+      # 换成 B 的 TiDB 时，把 DATABASE_URL 改成 mysql+pymysql://... 并加 DB_SSL=1
+      - key: AUTO_CREATE_TABLES
+        value: "1"
+      - key: ALPHA
+        value: "1.0"
+      - key: TRANSFER_EVERY
+        value: "2"
+      # 前后端同源部署，不需要跨域；留空即可
+      - key: CORS_ORIGINS
+        value: ""

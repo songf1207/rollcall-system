@@ -1,0 +1,48 @@
+口径：算法测试使用固定种子与内存候选；导入测试使用临时 SQLite。均不代表线上 API 延迟。
+
+## 1. 加权不重复抽样：抽满全班的耗时（毫秒）
+
+| 人数 n | 朴素 O(k·n) | A-Res O(n log n) | 提速 |
+| ---: | ---: | ---: | ---: |
+| 100 | 0.26 | 0.09 | 2.7x |
+| 300 | 1.96 | 0.27 | 7.2x |
+| 1000 | 21.49 | 0.90 | 24.0x |
+
+## 2. 导入 1000 名学生：逐行提交 vs 批量提交（毫秒）
+
+| 方式 | 耗时 | 提速 |
+| --- | ---: | ---: |
+| 逐行 add + commit | 2843.4 | 1.0x |
+| 一次 add_all + commit | 40.6 | 70.0x |
+
+## 3. 单人抽样：完整排序 vs 扫描最小键（含候选快照，毫秒）
+
+| 候选人数 | 完整排序 O(n log n) | 扫描 O(n) |
+| ---: | ---: | ---: |
+| 100 | 0.0868 | 0.0806 |
+| 300 | 0.2566 | 0.2396 |
+| 1000 | 0.8696 | 0.7896 |
+
+## 4. cProfile 热点（1000 人中抽 1 人 × 20 次）
+
+```
+         160081 function calls in 0.048 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+       20    0.024    0.001    0.048    0.002 E:\studywork\软工\backend\app\core\weights.py:87(sample_without_replacement)
+    20000    0.010    0.000    0.010    0.000 <string>:2(__init__)
+    20000    0.004    0.000    0.005    0.000 E:\studywork\软工\backend\app\core\weights.py:62(_draw_u)
+       40    0.002    0.000    0.003    0.000 {built-in method builtins.min}
+    40000    0.003    0.000    0.003    0.000 {built-in method math.isfinite}
+    20000    0.002    0.000    0.002    0.000 {built-in method math.log}
+    20000    0.002    0.000    0.002    0.000 {method 'append' of 'list' objects}
+    20000    0.002    0.000    0.002    0.000 {method 'random' of '_random.Random' objects}
+    20000    0.001    0.000    0.001    0.000 E:\studywork\软工\backend\app\core\weights.py:124(<lambda>)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+       20    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+
+
+
+```

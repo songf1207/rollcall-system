@@ -1,0 +1,28 @@
+# 适用于总仓库包含 frontend/ 和 backend/ 的结构。
+services:
+  - type: web
+    name: rollcall-api
+    runtime: python
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt -c constraints-tested.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      - key: DATABASE_URL
+        sync: false
+      - key: DB_SSL
+        value: "1"
+      - key: TEACHER_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: ALPHA
+        value: "1.0"
+      - key: AUTO_CREATE_TABLES
+        value: "1"
+      - key: TIMEZONE
+        value: "Asia/Shanghai"

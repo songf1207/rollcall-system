@@ -1,0 +1,28 @@
+# Python / 后端
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.db
+*.db-*
+*.sqlite3
+.env
+.env.*
+!.env.example
+.teacher-key.txt
+.pytest_cache/
+certs/
+*.log
+
+# 前端
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# 编辑器
+.vscode/
+.idea/
+.DS_Store
+*.swp

@@ -1,0 +1,13 @@
+# 运行时依赖
+fastapi>=0.115
+uvicorn[standard]>=0.30
+SQLAlchemy>=2.0
+PyMySQL[rsa]>=1.1     # MySQL 驱动及 MySQL 8 身份验证
+tzdata>=2024.1        # Windows 的 ZoneInfo 时区数据
+openpyxl>=3.1         # Excel 导入导出
+python-multipart>=0.0.9  # 文件上传
+python-dotenv>=1.0    # 可选：本项目自带了极简 .env 解析，装上也无妨
+
+# 测试
+pytest>=8.0
+httpx>=0.27           # FastAPI TestClient 依赖
