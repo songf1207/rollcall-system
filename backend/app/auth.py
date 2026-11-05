@@ -12,6 +12,9 @@ teacher_key = APIKeyHeader(name="X-Teacher-Key", scheme_name="TeacherKey", auto_
 
 
 def require_teacher(key: str | None = Security(teacher_key)):
+    # 课堂演示模式：OPEN_ACCESS=1 时完全放开，打开网址即可使用（不校验口令）
+    if settings.open_access:
+        return
     if not settings.teacher_api_key:
         raise AppError("教师管理口令尚未配置，请联系管理员", status_code=503)
     if not key or not secrets.compare_digest(key.encode("utf-8"), settings.teacher_api_key.encode("utf-8")):

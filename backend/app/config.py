@@ -61,6 +61,8 @@ class Settings:
     auto_create_tables: bool
     timezone: str = "Asia/Shanghai"
     teacher_api_key: str = ""
+    # 课堂演示用开关：OPEN_ACCESS=1 时不再校验教师口令（任何人打开即可用）
+    open_access: bool = False
     cors_origins: list[str] = field(default_factory=list)
 
 
@@ -81,6 +83,7 @@ def load_settings() -> Settings:
         auto_create_tables=_env_bool("AUTO_CREATE_TABLES", True),
         timezone=os.getenv("TIMEZONE", "Asia/Shanghai") or "Asia/Shanghai",
         teacher_api_key=os.getenv("TEACHER_API_KEY", ""),
+        open_access=_env_bool("OPEN_ACCESS", False),
         cors_origins=origins or ["*"],
     )
 

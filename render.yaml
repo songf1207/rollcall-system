@@ -10,9 +10,9 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.7"
-      # 教师口令：部署时在 Render 面板里手动填写（不要写进仓库）
-      - key: TEACHER_API_KEY
-        sync: false
+      # 课堂演示模式：不再校验教师口令，打开网址直接可用
+      - key: OPEN_ACCESS
+        value: "1"
       # 数据库：先用 Render 自带的临时 SQLite（重启后可能重置）
       # 换成 B 的 TiDB 时，把 DATABASE_URL 改成 mysql+pymysql://... 并加 DB_SSL=1
       - key: AUTO_CREATE_TABLES
