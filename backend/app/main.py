@@ -105,10 +105,14 @@ for router in (students.router, classes_api.router, sessions.router, rollcalls.r
     app.include_router(router, dependencies=[Depends(require_teacher)])
 
 
-@app.get("/", include_in_schema=False)
-def root():
-    # 有打包好的前端就由下面挂载的静态目录接管；没有（纯后端开发）时跳文档
-    return RedirectResponse(url="/docs")
+# ----------------------------------------------------------------------
+# 前端静态文件托管（单服务部署）
+# 把 npm run build 产出的 dist 放到 app/static/，FastAPI 顺带把界面也发了，
+# 前后端同源：不用配 CORS，只部署一个服务。
+# 注意：必须在所有 /api 路由之后挂载，否则会把接口也吃掉。
+# ----------------------------------------------------------------------
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+HAS_STATIC = STATIC_DIR.is_dir() and (STATIC_DIR / "index.html").exists()
 
 
 @app.get("/health", response_model=Resp[HealthOut], tags=["运维"], summary="健康检查（Render 探活用）")
@@ -125,13 +129,12 @@ def health():
         db.close()
 
 
-# ----------------------------------------------------------------------
-# 前端静态文件托管（单服务部署）
-# 把 npm run build 产出的 dist 放到 app/static/，FastAPI 就直接把界面也发了，
-# 前后端同源：不用配 CORS，只部署一个服务就够。
-# 目录不存在时（纯后端开发）自动跳过。
-# ----------------------------------------------------------------------
-STATIC_DIR = Path(__file__).resolve().parent / "static"
-if STATIC_DIR.is_dir() and (STATIC_DIR / "index.html").exists():
+if HAS_STATIC:
+    # 有前端产物：根路径交给静态目录（html=True 会返回 index.html）
     app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="web")
     logger.info("已挂载前端静态目录：%s", STATIC_DIR)
+else:
+    # 纯后端运行（本地开发）：根路径跳接口文档
+    @app.get("/", include_in_schema=False)
+    def root():
+        return RedirectResponse(url="/docs")
